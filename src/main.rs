@@ -14,6 +14,8 @@ fn main() {
     io::stdin().read_line(&mut shoes).expect("Failed");
     let mut num_shoes = shoes.trim().parse().expect("Not int");
     for n in 0..num_shoes {
+        //create the shoe to use for play
+        //this is messy 
         let mut shoe: Vec<u8> = Vec::new();
         for _ in 0..8 {
             let deck = create_deck();
@@ -21,6 +23,7 @@ fn main() {
         }
         let mut deck = shoe.clone();
         let cut_card: usize = thread_rng().gen_range(270..354);
+        // play the hands in the shoe
         while deck.len() > (cut_card){
             let tup = play_hand(deck);
             deck = tup.0;
@@ -41,7 +44,7 @@ fn main() {
     println!("Player Wins %: {:?} Dealer Wins %: {:?} Tie % {:?}", ((player_wins as f32/(player_wins+dealer_wins+ties) as f32) *100.00), ((dealer_wins as f32 /(player_wins+dealer_wins+ties) as f32) * 100.00), ((ties as f32/(player_wins+dealer_wins+ties) as f32) * 100.00));
 }
 
-
+//convert to hand to card representation
 fn hand_as_cards(hand: &Vec<u8>) -> String {
     let mut s = String::new();
     for card in hand.iter() {
@@ -50,6 +53,7 @@ fn hand_as_cards(hand: &Vec<u8>) -> String {
     s
 }
 
+//convert card from int to string
 fn get_card(card: &u8) -> String {
     match card {
         0 => "2S".to_string(),
@@ -108,6 +112,8 @@ fn get_card(card: &u8) -> String {
     }
 }
 
+//convert card to its value in baccarat
+// face cards = 10 Ace = 1
 fn card_value(card: &u8) -> u8 {
     match card {
         0 => 2,
@@ -166,6 +172,7 @@ fn card_value(card: &u8) -> u8 {
     }
 }
 
+// get the baccarat hand value
 fn hand_value(hand: &Vec<u8>) -> u16 {
     let mut value: u16 = 0;
     for i in hand {
@@ -174,6 +181,7 @@ fn hand_value(hand: &Vec<u8>) -> u16 {
     value % 10
 }
 
+//create a shuffled deck
 fn create_deck() -> Vec<u8> {
     let unshuffled_deck = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51];
     let mut shuffled_deck = Vec::new();
@@ -183,6 +191,7 @@ fn create_deck() -> Vec<u8> {
     shuffled_deck
 }
 
+//play through 1 hand and return the deck and hands
 fn play_hand(mut deck: Vec<u8>) -> (Vec<u8>, Vec<u8>, Vec<u8>) {
 
     let mut player = Vec::new();
@@ -215,6 +224,7 @@ fn play_hand(mut deck: Vec<u8>) -> (Vec<u8>, Vec<u8>, Vec<u8>) {
 
 }
 
+//check for tie or winner of the hand
 fn check_outcome(player:&Vec<u8>, dealer:&Vec<u8>) -> String {
     if hand_value(&player) == hand_value(&dealer){
         "Tie".to_string()

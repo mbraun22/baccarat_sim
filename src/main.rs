@@ -4,7 +4,7 @@ use rand::Rng;
 use rand::seq::SliceRandom;
 use std::io;
 
-
+//baccarat rules from https://www.caesars.com/casino-gaming-blog/latest-posts/table-games/baccarat/how-to-play-baccarat
 fn main() {
     let mut player_wins = 0;
     let mut dealer_wins = 0;

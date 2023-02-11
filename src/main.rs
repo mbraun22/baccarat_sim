@@ -9,6 +9,13 @@ fn main() {
     let mut player_wins = 0;
     let mut dealer_wins = 0;
     let mut ties = 0;
+    let mut tie_streak = 0;
+    let mut player_streak = 0;
+    let mut dealer_streak = 0;
+    let mut highest_tie = 0;
+    let mut highest_player = 0;
+    let mut highest_dealer = 0;
+    let mut last_win = String::new();
     let mut shoes = String::new();
     println!("How many shoes would you like to simulate?");
     io::stdin().read_line(&mut shoes).expect("Failed");
@@ -31,17 +38,45 @@ fn main() {
             let mut dealer: Vec<u8> = tup.2;
             if check_outcome(&player, &dealer) == "Tie".to_string(){
                 ties += 1;
+                if last_win == "Tie".to_string() {
+                    tie_streak += 1;
+                    if highest_tie < tie_streak {
+                        highest_tie = tie_streak;
+                    }
+                }
+                last_win = "Tie".to_string();
+                dealer_streak = 0;
+                player_streak = 0;
             }
             else if check_outcome(&player, &dealer) == "Player".to_string() {
                 player_wins += 1;
+                if last_win == "Player".to_string() {
+                    player_streak += 1;
+                    if highest_player < player_streak {
+                        highest_player = player_streak;
+                    }
+                }
+                last_win = "Player".to_string();
+                dealer_streak = 0;
+                tie_streak = 0;
             }
             else {
                 dealer_wins += 1;
+                if last_win == "Dealer".to_string() {
+                    dealer_streak += 1;
+                    if highest_dealer < dealer_streak {
+                        highest_dealer = dealer_streak;
+                    }
+                }
+                last_win = "Dealer".to_string();
+                player_streak = 0;
+                tie_streak = 0;
             }
         }
         println!("Player Wins: {} Dealer Wins: {} Ties: {} Shoe Number: {}", player_wins, dealer_wins, ties, n);
     }
     println!("Player Wins %: {:?} Dealer Wins %: {:?} Tie % {:?}", ((player_wins as f32/(player_wins+dealer_wins+ties) as f32) *100.00), ((dealer_wins as f32 /(player_wins+dealer_wins+ties) as f32) * 100.00), ((ties as f32/(player_wins+dealer_wins+ties) as f32) * 100.00));
+    println!("Highest streak - Player: {} Dealer: {} Tie: {}", highest_player, highest_dealer, highest_tie);
 }
 
 //convert to hand to card representation

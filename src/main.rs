@@ -1,7 +1,6 @@
-
+use rand::seq::SliceRandom;
 use rand::thread_rng;
 use rand::Rng;
-use rand::seq::SliceRandom;
 use std::io;
 
 //baccarat rules from https://www.caesars.com/casino-gaming-blog/latest-posts/table-games/baccarat/how-to-play-baccarat
@@ -22,7 +21,7 @@ fn main() {
     let mut num_shoes = shoes.trim().parse().expect("Not int");
     for n in 0..num_shoes {
         //create the shoe to use for play
-        //this is messy 
+        //this is messy
         let mut shoe: Vec<u8> = Vec::new();
         for _ in 0..8 {
             let deck = create_deck();
@@ -31,12 +30,12 @@ fn main() {
         let mut deck = shoe.clone();
         let cut_card: usize = thread_rng().gen_range(270..354);
         // play the hands in the shoe
-        while deck.len() > (cut_card){
+        while deck.len() > (cut_card) {
             let tup = play_hand(deck);
             deck = tup.0;
             let mut player: Vec<u8> = tup.1;
             let mut dealer: Vec<u8> = tup.2;
-            if check_outcome(&player, &dealer) == "Tie".to_string(){
+            if check_outcome(&player, &dealer) == "Tie".to_string() {
                 ties += 1;
                 if last_win == "Tie".to_string() {
                     tie_streak += 1;
@@ -47,8 +46,7 @@ fn main() {
                 last_win = "Tie".to_string();
                 dealer_streak = 0;
                 player_streak = 0;
-            }
-            else if check_outcome(&player, &dealer) == "Player".to_string() {
+            } else if check_outcome(&player, &dealer) == "Player".to_string() {
                 player_wins += 1;
                 if last_win == "Player".to_string() {
                     player_streak += 1;
@@ -59,8 +57,7 @@ fn main() {
                 last_win = "Player".to_string();
                 dealer_streak = 0;
                 tie_streak = 0;
-            }
-            else {
+            } else {
                 dealer_wins += 1;
                 if last_win == "Dealer".to_string() {
                     dealer_streak += 1;
@@ -73,17 +70,28 @@ fn main() {
                 tie_streak = 0;
             }
         }
-        println!("Player Wins: {} Dealer Wins: {} Ties: {} Shoe Number: {}", player_wins, dealer_wins, ties, n);
+        println!(
+            "Player Wins: {} Dealer Wins: {} Ties: {} Shoe Number: {}",
+            player_wins, dealer_wins, ties, n
+        );
     }
-    println!("Player Wins %: {:?} Dealer Wins %: {:?} Tie % {:?}", ((player_wins as f32/(player_wins+dealer_wins+ties) as f32) *100.00), ((dealer_wins as f32 /(player_wins+dealer_wins+ties) as f32) * 100.00), ((ties as f32/(player_wins+dealer_wins+ties) as f32) * 100.00));
-    println!("Highest streak - Player: {} Dealer: {} Tie: {}", highest_player, highest_dealer, highest_tie);
+    println!(
+        "Player Wins %: {:?} Dealer Wins %: {:?} Tie % {:?}",
+        ((player_wins as f32 / (player_wins + dealer_wins + ties) as f32) * 100.00),
+        ((dealer_wins as f32 / (player_wins + dealer_wins + ties) as f32) * 100.00),
+        ((ties as f32 / (player_wins + dealer_wins + ties) as f32) * 100.00)
+    );
+    println!(
+        "Highest streak - Player: {} Dealer: {} Tie: {}",
+        highest_player, highest_dealer, highest_tie
+    );
 }
 
 //convert to hand to card representation
 fn hand_as_cards(hand: &Vec<u8>) -> String {
     let mut s = String::new();
     for card in hand.iter() {
-        s.push_str(&get_card(card)); 
+        s.push_str(&get_card(card));
     }
     s
 }
@@ -203,7 +211,7 @@ fn card_value(card: &u8) -> u8 {
         49 => 10,
         50 => 10,
         51 => 1,
-        _ => 0, 
+        _ => 0,
     }
 }
 
@@ -218,7 +226,11 @@ fn hand_value(hand: &Vec<u8>) -> u16 {
 
 //create a shuffled deck
 fn create_deck() -> Vec<u8> {
-    let unshuffled_deck = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51];
+    let unshuffled_deck = vec![
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+        25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+        48, 49, 50, 51,
+    ];
     let mut shuffled_deck = Vec::new();
     let mut rng = rand::thread_rng();
     shuffled_deck = unshuffled_deck.clone();
@@ -228,11 +240,10 @@ fn create_deck() -> Vec<u8> {
 
 //play through 1 hand and return the deck and hands
 fn play_hand(mut deck: Vec<u8>) -> (Vec<u8>, Vec<u8>, Vec<u8>) {
-
     let mut player = Vec::new();
     let mut dealer = Vec::new();
-    let mut player_score:u8 = 0;
-    let mut dealer_score:u8 = 0;
+    let mut player_score: u8 = 0;
+    let mut dealer_score: u8 = 0;
     let mut deck_index: u8 = 3;
 
     player.push(deck[0]);
@@ -245,31 +256,26 @@ fn play_hand(mut deck: Vec<u8>) -> (Vec<u8>, Vec<u8>, Vec<u8>) {
         return (deck, player, dealer);
     }
 
-    while hand_value(&player) < 6{
-        player.push(deck[(deck_index+1) as usize ]);
+    while hand_value(&player) < 6 {
+        player.push(deck[(deck_index + 1) as usize]);
         deck_index += 1;
     }
 
-    while hand_value(&dealer) < 6{
-        dealer.push(deck[(deck_index+1) as usize]);
+    while hand_value(&dealer) < 6 {
+        dealer.push(deck[(deck_index + 1) as usize]);
         deck_index += 1;
     }
     deck.drain(0..(deck_index as usize));
     (deck, player, dealer)
-
 }
 
 //check for tie or winner of the hand
-fn check_outcome(player:&Vec<u8>, dealer:&Vec<u8>) -> String {
-    if hand_value(&player) == hand_value(&dealer){
+fn check_outcome(player: &Vec<u8>, dealer: &Vec<u8>) -> String {
+    if hand_value(&player) == hand_value(&dealer) {
         "Tie".to_string()
-    }
-    else if hand_value(&player) > hand_value(&dealer){
+    } else if hand_value(&player) > hand_value(&dealer) {
         "Player".to_string()
-    }
-
-    else {
+    } else {
         "Dealer".to_string()
     }
-
 }

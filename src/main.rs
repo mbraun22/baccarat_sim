@@ -30,7 +30,7 @@ fn main() {
         let mut deck = shoe.clone();
         let cut_card: usize = thread_rng().gen_range(270..354);
         // play the hands in the shoe
-        while deck.len() > (cut_card) {
+        while deck.len() > (416-cut_card) {
             let tup = play_hand(deck);
             deck = tup.0;
             let mut player: Vec<u8> = tup.1;
@@ -211,7 +211,7 @@ fn card_value(card: &u8) -> u8 {
         49 => 10,
         50 => 10,
         51 => 1,
-        _ => 0,
+        _ => panic!(),
     }
 }
 
